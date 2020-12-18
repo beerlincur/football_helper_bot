@@ -1,18 +1,18 @@
 import json
-from typing import Tuple, Union
+from typing import Tuple, Union, Dict
 from check import check_if_lists_empty
 
 
-async def do_parse_game_results(game_result: str) -> Union[Tuple[int, int], bool]:
+async def do_parse_game_results(game_result: str) -> Tuple[float, float]:
     try:
         first, second = list(map(int, game_result.split()))
         
         return (0.5 if first == 0 else first, 0.5 if second == 0 else second)
     except:
-        return False
+        return (-1, -1)
 
 
-async def do_enter_game_results_to_league(two_teams_info):
+async def do_enter_game_results_to_league(two_teams_info) -> Union[Dict[str, Union[float, str]], bool]:
     try:
         tournament_index = two_teams_info['tournament_index']
         league_index = two_teams_info['league_index']
@@ -21,6 +21,9 @@ async def do_enter_game_results_to_league(two_teams_info):
         game_result = two_teams_info['game_result']
 
         first_scored, second_scored = await do_parse_game_results(game_result)
+
+        if first_scored == -1:
+            return False
 
         with open("tournaments.json", "r+", encoding="utf-8") as file:
             data = json.load(file)
@@ -36,12 +39,27 @@ async def do_enter_game_results_to_league(two_teams_info):
 
                 league_coefficient = data["tournaments"][tournament_index]['leagues'][league_index]['coefficient']
 
+                f_cur_rating = round((fisrt_team['rating'] / fisrt_team['played_games']) if fisrt_team['played_games'] != 0 else fisrt_team['rating'], 2)
+                s_cur_rating = round((second_team['rating'] / second_team['played_games']) if second_team['played_games'] != 0 else second_team['rating'], 2)
+                
+                # print("f_c_r", f_cur_rating)
+                # print("==============")
+                # print("s_c_r", s_cur_rating)
+                # print("==============")
+                
+                f_t_r = round( ( ( ( ( (first_scored + second_scored) / second_scored ) + first_scored ) + (s_cur_rating / 2.0) ) * league_coefficient ), 2)
+                
+                # print("==============")
+                # print("f_t_r", f_t_r)
+                # print("==============")
+
+                s_t_r = round( ( ( ( ( (second_scored + first_scored) / first_scored ) + second_scored ) + (f_cur_rating / 2.0) ) * league_coefficient ), 2)
+
+                # print("s_t_r", s_t_r)
+                # print("==============")
+
                 data["tournaments"][tournament_index]['leagues'][league_index]['score_top'][first_team_index]['played_games'] += 1
                 data["tournaments"][tournament_index]['leagues'][league_index]['score_top'][second_team_index]['played_games'] += 1
-
-                f_t_r = ( ( ( ( (first_scored + second_scored) / second_scored ) + first_scored ) + (second_team['rating'] / 2.0) ) * league_coefficient )
-
-                s_t_r = ( ( ( ( (second_scored + first_scored) / first_scored ) + second_scored ) + (fisrt_team['rating'] / 2.0) ) * league_coefficient )
 
                 data["tournaments"][tournament_index]['leagues'][league_index]['score_top'][first_team_index]['rating'] += f_t_r
 
@@ -77,8 +95,6 @@ async def do_enter_game_results_to_tourn(changes) -> bool:
         with open("tournaments.json", "r+", encoding="utf-8") as file:
             data = json.load(file)
             try:
-                tournament_index = changes['tournament_index']
-
                 is_empty = await check_if_lists_empty(data, tournament_index)
 
                 if is_empty:
@@ -119,8 +135,8 @@ async def do_sort_teams_by_rating_down(teams_list):
             maximum = i
 
             for j in range(i + 1, size):
-                f_c_r = round(teams_list[j]['rating'] / teams_list[j]['played_games'], 2) if teams_list[j]['played_games'] != 0 else round(teams_list[j]['rating'], 2)
-                s_c_r = round(teams_list[maximum]['rating'] / teams_list[maximum]['played_games'], 2) if teams_list[maximum]['played_games'] != 0 else round(teams_list[maximum]['rating'], 2)
+                f_c_r = round(teams_list[j]['rating'] / teams_list[j]['played_games'] if teams_list[j]['played_games'] != 0 else teams_list[j]['rating'], 2)
+                s_c_r = round(teams_list[maximum]['rating'] / teams_list[maximum]['played_games'] if teams_list[maximum]['played_games'] != 0 else teams_list[maximum]['rating'], 2)
                 if f_c_r > s_c_r:
                     maximum = j
 

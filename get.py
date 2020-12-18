@@ -74,7 +74,7 @@ async def get_teams_string(teams_info) -> Union[str, bool]:
 
             for k, team in enumerate(trmnts[tournament_index]['leagues'][league_index]['score_top']):
                 team_name = team['name']
-                team_rating = round(team['rating'] / team['played_games'], 2) if team['played_games'] != 0 else round(team['rating'], 2)
+                team_rating = round(team['rating'] / team['played_games'] if team['played_games'] != 0 else team['rating'], 2)
 
                 result += f"{k+1}. {team_name}\nРейтинг: {team_rating}\n\n"
 
@@ -100,7 +100,7 @@ async def get_tourn_teams_string(tournament_index: int) -> str:
 
             for k, team in enumerate(trmnts[tournament_index]['score_top']):
                 team_name = team['name']
-                team_rating = round(team['rating'] / team['played_games'], 2) if team['played_games'] != 0 else round(team['rating'], 2)
+                team_rating = round(team['rating'] / team['played_games'] if team['played_games'] != 0 else team['rating'], 2)
 
                 result += f"{k+1}. {team_name}\nРейтинг: {team_rating}\n\n"
 
@@ -131,8 +131,8 @@ async def get_two_teams_string(two_teams_info) -> Union[str, bool]:
             first_handicap = 0
             second_handicap = 0
 
-            f_c_r = round(first_team['rating'] / first_team['played_games'], 2) if first_team['played_games'] != 0 else round(first_team['rating'], 2)
-            s_c_r = round(second_team['rating'] / second_team['played_games'], 2) if second_team['played_games'] != 0 else round(second_team['rating'], 2)
+            f_c_r = round(first_team['rating'] / first_team['played_games'] if first_team['played_games'] != 0 else first_team['rating'], 2)
+            s_c_r = round(second_team['rating'] / second_team['played_games'] if second_team['played_games'] != 0 else second_team['rating'], 2)
 
             if f_c_r > s_c_r:
                 second_handicap = int(f_c_r - s_c_r)
@@ -229,7 +229,7 @@ async def get_team(team_info) -> Union[str, bool]:
 
             rating_t = trmnts[tournament_index]['leagues'][league_index]['score_top'][team_index]['rating']
             played_t = trmnts[tournament_index]['leagues'][league_index]['score_top'][team_index]['played_games']
-            team_rating = round(rating_t / played_t, 2) if played_t != 0 else round(rating_t, 2)
+            team_rating = round(rating_t / played_t if played_t != 0 else rating_t, 2)
 
             result = f"Команда {team_name} Рейтинг: {team_rating}\nИз лиги {l_name} (коэффициент силы - {l_coefficient}), турнира {t_name}"
 

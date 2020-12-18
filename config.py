@@ -7,11 +7,11 @@ config = ConfigParser()
 config.read("config.ini")
 
 
-TOKEN = config['token'][TOKEN]
+TOKEN = config['token']['TOKEN']
 
 BOT_URL = config['bot_url']['BOT_URL']
 
-ADMINS_IDS = (config['chat_ids']['BOSS_ID'], config['chat_ids']['KUSHER_ID'])
+ADMINS_IDS = (int(config['chat_ids']['BOSS_ID']), int(config['chat_ids']['KUSHER_ID']))
 
 #|-------------------- PROXIE ----------------|
 PROXIE_URL = config['proxie']['PROXIE_URL']
@@ -28,7 +28,7 @@ PROXIE_AUTH = BasicAuth(
 PROXIE_URL_W_AUTH = config['proxie']['PROXIE_URL_W_AUTH']
 
 
-BASE_RATING = 5
+BASE_RATING = 5.0
 
 
 MAIN_KEYBOARD = ListOfButtons(

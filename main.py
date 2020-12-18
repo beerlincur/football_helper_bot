@@ -223,9 +223,9 @@ async def add_team_team_rating(message: types.Message, state: FSMContext):
 async def add_team_tourn_index(message: types.Message, state: FSMContext):
 	if message.chat.id in ADMINS_IDS:
 		if message.text.isdigit():
-			leagues = await get_leagues_string(int(message.text)-1)
+			leagues = await get_leagues_string(int(message.text) - 1)
 			if leagues:
-				await state.update_data(tournament_index=(int(message.text)-1))
+				await state.update_data(tournament_index=(int(message.text) - 1))
 				await message.answer(leagues)
 				await message.answer("Выберите лигу для добавления команды:\n(введите только цифру - номер лиги из списка)", reply_markup=MAIN_CANCEL)
 				await TeamForm.league_index.set()
@@ -243,7 +243,7 @@ async def add_team_tourn_index(message: types.Message, state: FSMContext):
 async def add_team_league_index(message: types.Message, state: FSMContext):
 	if message.chat.id in ADMINS_IDS:
 		if message.text.isdigit():
-			await state.update_data(league_index=(int(message.text)-1))
+			await state.update_data(league_index=(int(message.text) - 1))
 			team_info = await state.get_data()
 			is_added = await add_team_to_tournament_to_league_json(team_info)
 			if is_added:
@@ -998,13 +998,17 @@ async def show_two_teams_second_team_index(message: types.Message, state: FSMCon
 			two_teams_info = await state.get_data()
 			changes_to_league = await do_enter_game_results_to_league(two_teams_info)
 			changes_to_tourn = await do_enter_game_results_to_tourn(changes_to_league)
-			two_teams_string = await get_two_teams_string(two_teams_info)
 
-			if two_teams_string and changes_to_league and changes_to_tourn:
-				await message.answer("Информация о командах после ввода результатов игры:")
-				await message.answer(two_teams_string)
-				await do_open_for_sort(two_teams_info['tournament_index'], two_teams_info['league_index'])
-				await state.reset_state(with_data=False)
+			if changes_to_league and changes_to_tourn:
+				two_teams_string = await get_two_teams_string(two_teams_info)
+				if two_teams_string:
+					await message.answer("Информация о командах после ввода результатов игры:")
+					await message.answer(two_teams_string)
+					await do_open_for_sort(two_teams_info['tournament_index'], two_teams_info['league_index'])
+					await state.reset_state(with_data=False)
+				else:
+					await message.answer("Либо команды под выбранным номером не существует, либо произошла ошибка")
+					await state.reset_state(with_data=False)
 			else:
 				await message.answer("Либо команды под выбранным номером не существует, либо произошла ошибка")
 				await state.reset_state(with_data=False)

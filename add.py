@@ -58,10 +58,7 @@ async def add_team_to_tournament_to_league_json(team_data: Dict[str, Union[str, 
             tournament_index = team_data['tournament_index']
             league_index = team_data['league_index']
             
-            team_rating = team_data['rating']
-            
-            if team_data['rating'] == 0:
-                team_rating = BASE_RATING * data['tournaments'][tournament_index]['leagues'][league_index]['coefficient']
+            team_rating = team_data['rating'] if team_data['rating'] != 0 else BASE_RATING * data['tournaments'][tournament_index]['leagues'][league_index]['coefficient']
             
             new_te = {
                 "name": team_data['name'],
