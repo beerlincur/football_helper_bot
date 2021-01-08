@@ -28,7 +28,7 @@ PROXIE_AUTH = BasicAuth(
 PROXIE_URL_W_AUTH = config['proxie']['PROXIE_URL_W_AUTH']
 
 
-BASE_RATING = 5.0
+BASE_RATING = 10.0
 
 
 MAIN_KEYBOARD = ListOfButtons(

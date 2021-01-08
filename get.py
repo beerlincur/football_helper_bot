@@ -75,8 +75,9 @@ async def get_teams_string(teams_info) -> Union[str, bool]:
             for k, team in enumerate(trmnts[tournament_index]['leagues'][league_index]['score_top']):
                 team_name = team['name']
                 team_rating = round(team['rating'] / team['played_games'] if team['played_games'] != 0 else team['rating'], 2)
+                team_played_games = team['played_games']
 
-                result += f"{k+1}. {team_name}\nРейтинг: {team_rating}\n\n"
+                result += f"{k+1}. {team_name}\nРейтинг: {team_rating} ({team_played_games})\n\n"
 
             return result
     except:
@@ -101,8 +102,9 @@ async def get_tourn_teams_string(tournament_index: int) -> str:
             for k, team in enumerate(trmnts[tournament_index]['score_top']):
                 team_name = team['name']
                 team_rating = round(team['rating'] / team['played_games'] if team['played_games'] != 0 else team['rating'], 2)
+                team_played_games = team['played_games']
 
-                result += f"{k+1}. {team_name}\nРейтинг: {team_rating}\n\n"
+                result += f"{k+1}. {team_name}\nРейтинг: {team_rating} ({team_played_games})\n\n"
 
             return result
     except:
@@ -147,12 +149,14 @@ async def get_two_teams_string(two_teams_info) -> Union[str, bool]:
             result = f"Команды турнира {tournament_name}, лиги {league_name} (коэффициент силы - {l_coefficient})\n\n"
 
             f_t_name = first_team['name']
+            f_t_played_games = first_team['played_games']
 
-            result += f"1. {f_t_name}\nРейтинг: {f_c_r}   Гандикап:  {first_handicap}\n\n"
+            result += f"1. {f_t_name}\nРейтинг: {f_c_r} ({f_t_played_games}) Гандикап: {first_handicap}\n\n"
 
             s_t_name = second_team['name']
+            s_t_played_games = second_team['played_games']
 
-            result += f"2. {s_t_name}\nРейтинг: {s_c_r}   Гандикап:  {second_handicap}\n\n"
+            result += f"2. {s_t_name}\nРейтинг: {s_c_r} ({s_t_played_games})  Гандикап: {second_handicap}\n\n"
 
             return result
     except:
@@ -231,7 +235,7 @@ async def get_team(team_info) -> Union[str, bool]:
             played_t = trmnts[tournament_index]['leagues'][league_index]['score_top'][team_index]['played_games']
             team_rating = round(rating_t / played_t if played_t != 0 else rating_t, 2)
 
-            result = f"Команда {team_name} Рейтинг: {team_rating}\nИз лиги {l_name} (коэффициент силы - {l_coefficient}), турнира {t_name}"
+            result = f"Команда {team_name} Рейтинг: {team_rating} ({played_t})\nИз лиги {l_name} (коэффициент силы - {l_coefficient}), турнира {t_name}"
 
             return result
     except:
